@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análise Bíblica da Planilha - Tia Liu</title>
+    <title>Análise Bíblica da Planilha - Eliane</title>
     <!-- Inclui Google Fonts para Playfair Display (títulos) e Lora (corpo) -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
     <!-- Inclui Tailwind CSS para estilização rápida e responsiva -->
@@ -18,6 +18,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 1rem; /* Espaçamento padrão para telas muito pequenas */
         }
         h1 {
             font-family: 'Playfair Display', serif; /* Fonte elegante para o título */
@@ -32,6 +33,7 @@
             padding: 0.75rem 1rem; /* Espaçamento interno */
             text-align: left;
             border-bottom: 1px solid #e0cbe0; /* Borda suave e feminina entre as linhas */
+            word-break: break-word; /* Garante que o texto longo dentro das células quebre */
         }
         th {
             background-color: #f7eaf7; /* Roxo muito claro para o cabeçalho */
@@ -50,18 +52,35 @@
             max-width: 90%; /* Largura máxima para o conteúdo */
             width: 100%; /* Garante que o wrapper ocupe a largura disponível */
         }
+
+        /* Responsividade do título h1 */
+        @media (max-width: 639px) { /* Para telas extra-pequenas (ex: mobile vertical) */
+            h1 {
+                font-size: 2rem; /* Reduz o tamanho da fonte para 2rem (32px) */
+            }
+        }
+        @media (min-width: 640px) and (max-width: 767px) { /* sm */
+            h1 {
+                font-size: 2.5rem; /* Aumenta para 2.5rem (40px) em sm */
+            }
+        }
+        @media (min-width: 768px) { /* md e maiores */
+            h1 {
+                font-size: 3rem; /* Tamanho original de 3rem (48px) */
+            }
+        }
     </style>
 </head>
 <body class="p-4 sm:p-6 lg:p-8">
-    <div class="container-wrapper mx-auto bg-white p-6 rounded-3xl shadow-xl border border-purple-100">
+    <div class="container-wrapper mx-auto bg-white p-6 sm:p-8 lg:p-10 rounded-3xl shadow-xl border border-purple-100">
         <h1 class="text-4xl font-bold mb-4 text-center text-purple-700 tracking-wide">ESTUDOS BÍBLICOS - ELIANE</h1>
 
-        <!-- Imagem da Bíblia - usando um placeholder com estilo -->
+        <!-- Imagem da Bíblia - usando um placeholder com estilo e responsividade -->
         <div class="flex justify-center mb-6">
             <img
                 src="https://placehold.co/120x100/A0522D/FFF?text=Bíblia"
                 alt="Imagem de uma Bíblia"
-                class="rounded-lg shadow-md border-2 border-purple-300"
+                class="max-w-[120px] h-auto rounded-lg shadow-md border-2 border-purple-300"
             >
         </div>
 
@@ -81,11 +100,11 @@
             </table>
         </div>
 
-        <div class="text-center mt-8 space-x-4"> <!-- Adicionado space-x-4 para espaçamento entre botões -->
-            <button id="refresh-button" class="bg-gradient-to-r from-purple-600 to-rose-500 hover:from-purple-700 hover:to-rose-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 border-2 border-purple-700">
+        <div class="text-center mt-8 flex flex-col sm:flex-row justify-center items-center gap-4"> <!-- Flexbox responsivo para botões -->
+            <button id="refresh-button" class="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-rose-500 hover:from-purple-700 hover:to-rose-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 border-2 border-purple-700">
                 Atualizar a Mensagem
             </button>
-            <button id="open-form-button" data-tally-open="w7gGEL" data-tally-layout="modal" data-tally-width="700" data-tally-emoji-text="📖" data-tally-emoji-animation="wave" class="bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 border-2 border-pink-700">
+            <button id="open-form-button" data-tally-open="w7gGEL" data-tally-layout="modal" data-tally-width="700" data-tally-emoji-text="📖" data-tally-emoji-animation="wave" class="w-full sm:w-auto bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 border-2 border-pink-700">
                 Enviar uma Análise
             </button>
         </div>
