@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análise Bíblica - Eliane</title>
+    <title>Análise Bíblica da Planilha - Eliane</title>
     <!-- Inclui Google Fonts para Playfair Display (títulos) e Lora (corpo) -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
     <!-- Inclui Tailwind CSS para estilização rápida e responsiva -->
@@ -143,31 +143,32 @@
                 }
 
                 // Analisa a resposta como JSON
-                const data = await response.json();
+                const allData = await response.json(); // Renomeado para evitar conflito com 'data' abaixo
 
-                if (data.length === 0) {
+                if (allData.length === 0) {
                     tableBody.innerHTML = '<tr><td colspan="100%" class="text-center py-4 text-gray-500">Nenhum dado encontrado para ser exibido.</td></tr>';
                     return;
                 }
 
-                // Obtém os cabeçalhos das colunas a partir da primeira linha de dados
-                const headers = Object.keys(data[0]);
+                // Pega apenas a última entrada da planilha
+                const lastEntry = allData[allData.length - 1];
+
+                // Obtém os cabeçalhos das colunas a partir da última entrada
+                const headers = Object.keys(lastEntry);
                 headers.forEach(header => {
                     const th = document.createElement('th');
                     th.textContent = header;
                     tableHeaders.appendChild(th);
                 });
 
-                // Preenche o corpo da tabela com os dados
-                data.forEach(rowData => {
-                    const tr = document.createElement('tr');
-                    headers.forEach(header => {
-                        const td = document.createElement('td');
-                        td.textContent = rowData[header];
-                        tr.appendChild(td);
-                    });
-                    tableBody.appendChild(tr);
+                // Preenche o corpo da tabela com APENAS a última linha de dados
+                const tr = document.createElement('tr');
+                headers.forEach(header => {
+                    const td = document.createElement('td');
+                    td.textContent = lastEntry[header];
+                    tr.appendChild(td);
                 });
+                tableBody.appendChild(tr);
 
             } catch (error) {
                 console.error("Erro ao buscar dados:", error);
