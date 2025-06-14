@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Bíblica da Planilha - Tia Liu</title>
+    <!-- Inclui Google Fonts para Playfair Display (títulos) e Lora (corpo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Inclui Tailwind CSS para estilização rápida e responsiva -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Define as fontes para o corpo e títulos */
+        body {
+            font-family: 'Lora', serif; /* Fonte mais clássica e feminina para o corpo */
+            background: linear-gradient(to bottom right, #fdf7f9, #f9f0e8); /* Gradiente suave de lavanda a pêssego/creme */
+            color: #4a4a4a; /* Cor de texto padrão, um cinza mais suave */
+            min-height: 100vh; /* Garante que o gradiente cubra toda a altura da tela */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        h1 {
+            font-family: 'Playfair Display', serif; /* Fonte elegante para o título */
+        }
+        /* Estilos personalizados para a tabela */
+        table {
+            width: 100%;
+            border-collapse: separate; /* Permite bordas arredondadas nos cantos da tabela */
+            border-spacing: 0;
+        }
+        th, td {
+            padding: 0.75rem 1rem; /* Espaçamento interno */
+            text-align: left;
+            border-bottom: 1px solid #e0cbe0; /* Borda suave e feminina entre as linhas */
+        }
+        th {
+            background-color: #f7eaf7; /* Roxo muito claro para o cabeçalho */
+            font-weight: 700; /* Negrito */
+            color: #6a0572; /* Roxo mais escuro para o texto do cabeçalho */
+            text-transform: uppercase; /* Maiúsculas */
+            letter-spacing: 0.05em; /* Espaçamento entre letras */
+        }
+        tr:last-child td {
+            border-bottom: none; /* Remove a borda inferior da última linha */
+        }
+        tbody tr:hover {
+            background-color: #fce4ec; /* Rosa bem claro ao passar o mouse */
+        }
+        .container-wrapper {
+            max-width: 90%; /* Largura máxima para o conteúdo */
+            width: 100%; /* Garante que o wrapper ocupe a largura disponível */
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-6 lg:p-8">
+    <div class="container-wrapper mx-auto bg-white p-6 rounded-3xl shadow-xl border border-purple-100">
+        <h1 class="text-4xl font-bold mb-4 text-center text-purple-700 tracking-wide">ESTUDOS BÍBLICOS - ELIANE</h1>
+
+        <!-- Imagem da Bíblia - usando um placeholder com estilo -->
+        <div class="flex justify-center mb-6">
+            <img
+                src="https://placehold.co/120x100/A0522D/FFF?text=Bíblia"
+                alt="Imagem de uma Bíblia"
+                class="rounded-lg shadow-md border-2 border-purple-300"
+            >
+        </div>
+
+        <div id="loading" class="text-center text-purple-600 mb-4 hidden">Carregando as bênçãos...</div>
+        <div id="error" class="text-center text-red-600 mb-4 hidden">Erro ao buscar a Palavra. Por favor, tente novamente.</div>
+
+        <div class="overflow-x-auto rounded-2xl border border-purple-200 shadow-md">
+            <table class="min-w-full divide-y divide-purple-100">
+                <thead class="bg-purple-50">
+                    <tr id="table-headers">
+                        <!-- Cabeçalhos da tabela serão inseridos aqui pelo JavaScript -->
+                    </tr>
+                </thead>
+                <tbody id="table-body" class="bg-white divide-y divide-purple-50">
+                    <!-- Linhas de dados serão inseridas aqui pelo JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-8 space-x-4"> <!-- Adicionado space-x-4 para espaçamento entre botões -->
+            <button id="refresh-button" class="bg-gradient-to-r from-purple-600 to-rose-500 hover:from-purple-700 hover:to-rose-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 border-2 border-purple-700">
+                Atualizar a Mensagem
+            </button>
+            <button id="open-form-button" data-tally-open="w7gGEL" data-tally-layout="modal" data-tally-width="700" data-tally-emoji-text="📖" data-tally-emoji-animation="wave" class="bg-gradient-to-r from-pink-500 to-red-400 hover:from-pink-600 hover:to-red-500 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 border-2 border-pink-700">
+                Enviar uma Análise
+            </button>
+        </div>
+    </div>
+
+    <!-- Script do Tally.so para embedar o formulário -->
+    <script async src="https://tally.so/widgets/embed.js"></script>
+
+    <script>
+        // A URL da sua aplicação web do Google Apps Script
+        const SPREADSHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwpjXUNVe3fZlRPzRLRAQQ6N9cPS2mqKxi5cpAfRk-I5MSwTuYOFnsBgWL0cEvOz9__2A/exec';
+
+        // Função para buscar e exibir os dados da planilha
+        async function fetchSpreadsheetData() {
+            const loadingElement = document.getElementById('loading');
+            const errorElement = document.getElementById('error');
+            const tableHeaders = document.getElementById('table-headers');
+            const tableBody = document.getElementById('table-body');
+            const refreshButton = document.getElementById('refresh-button');
+
+            loadingElement.classList.remove('hidden');
+            errorElement.classList.add('hidden');
+            refreshButton.disabled = true; // Desabilita o botão enquanto carrega
+
+            // Limpa o conteúdo anterior da tabela
+            tableHeaders.innerHTML = '';
+            tableBody.innerHTML = '';
+
+            try {
+                // Faz a requisição para a URL do seu Google Apps Script
+                const response = await fetch(SPREADSHEET_API_URL);
+
+                // Verifica se a resposta foi bem-sucedida (status 200-299)
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP! status: ${response.status}`);
+                }
+
+                // Analisa a resposta como JSON
+                const data = await response.json();
+
+                if (data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="100%" class="text-center py-4 text-gray-500">Nenhum dado encontrado para ser exibido.</td></tr>';
+                    return;
+                }
+
+                // Obtém os cabeçalhos das colunas a partir da primeira linha de dados
+                const headers = Object.keys(data[0]);
+                headers.forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    tableHeaders.appendChild(th);
+                });
+
+                // Preenche o corpo da tabela com os dados
+                data.forEach(rowData => {
+                    const tr = document.createElement('tr');
+                    headers.forEach(header => {
+                        const td = document.createElement('td');
+                        td.textContent = rowData[header];
+                        tr.appendChild(td);
+                    });
+                    tableBody.appendChild(tr);
+                });
+
+            } catch (error) {
+                console.error("Erro ao buscar dados:", error);
+                errorElement.classList.remove('hidden');
+                errorElement.textContent = `Erro ao carregar dados: ${error.message}. Por favor, verifique a URL e as permissões do Apps Script.`;
+            } finally {
+                loadingElement.classList.add('hidden');
+                refreshButton.disabled = false; // Reabilita o botão
+            }
+        }
+
+        // Anexa o evento de clique ao botão de atualização
+        document.getElementById('refresh-button').addEventListener('click', fetchSpreadsheetData);
+
+        // Carrega os dados quando a página é carregada
+        window.onload = fetchSpreadsheetData;
+    </script>
+</body>
+</html>
